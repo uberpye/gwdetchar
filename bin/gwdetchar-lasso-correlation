@@ -158,6 +158,9 @@ lsig.add_argument('-L', '--line-size-primary', default=1, type=float,
 lsig.add_argument('-l', '--line-size-aux', default=0.75, type=float,
                   help='line width of auxilary channel')
 
+lsig.add_argument('-F', '--paperV', action='store_true', default=False,
+                  help='toggles pdf, sets font size to paper size')
+
 args = parser.parse_args()
 
 start = int(args.gpsstart)
@@ -429,10 +432,15 @@ if range_is_primary:
 else:
     ax.set_ylabel('Primary Channel Units')
     ax.set_title('Lasso Model of Primary Channel')
-ax.legend(loc='best')
-fig.canvas.draw_idle()
 
-plot1 = '%s-LASSO_MODEL-%s.png' % (args.ifo, gpsstub)
+if args.paperV: 
+    ax.legend(loc='best', fontsize=20)
+    plot1 = '%s-LASSO_MODEL-%s.pdf' % (args.ifo, gpsstub)
+else:
+    ax.legend(loc='best')
+    plot1 = '%s-LASSO_MODEL-%s.png' % (args.ifo, gpsstub)
+
+fig.canvas.draw_idle()
 try:
     fig.savefig(plot1)
 except (RuntimeError, IOError, IndexError):
@@ -492,7 +500,10 @@ else:
 ax.set_title('Summations of Channel Contributions to Model')
 fig.canvas.draw_idle()
 
-plot2 = '%s-LASSO_CHANNEL_SUMMATION-%s.png' % (args.ifo, gpsstub)
+if args.paperV:
+    plot2 = '%s-LASSO_CHANNEL_SUMMATION-%s.pdf' % (args.ifo, gpsstub)
+else:
+    plot2 = '%s-LASSO_CHANNEL_SUMMATION-%s.png' % (args.ifo, gpsstub)
 try:
     fig.savefig(plot2)
 except (RuntimeError, IOError, IndexError):
@@ -512,8 +523,12 @@ legend = legend_fig.legend(patches, labels, loc='center',
                            frameon=False, fontsize='small')
 legend_fig.canvas.draw_idle()
 
-plot2_legend = ('%s-LASSO_CHANNEL_SUMMATION_LEGEND-%s.png'
-                % (args.ifo, gpsstub))
+if args.paperV:
+    plot2_legend = ('%s-LASSO_CHANNEL_SUMMATION_LEGEND-%s.pdf'
+                    % (args.ifo, gpsstub))
+else:
+    plot2_legend = ('%s-LASSO_CHANNEL_SUMMATION_LEGEND-%s.png'
+                    % (args.ifo, gpsstub))
 try:
     legend_fig.savefig(
         plot2_legend,
@@ -562,7 +577,10 @@ else:
 ax.set_title('Individual Channel Contributions to Model')
 fig.canvas.draw_idle()
 
-plot3 = '%s-LASSO_CHANNEL_CONTRIBUTIONS-%s.png' % (args.ifo, gpsstub)
+if args.paperV:
+    plot3 = '%s-LASSO_CHANNEL_CONTRIBUTIONS-%s.pdf' % (args.ifo, gpsstub)
+else:
+    plot3 = '%s-LASSO_CHANNEL_CONTRIBUTIONS-%s.png' % (args.ifo, gpsstub)
 try:
     fig.savefig(plot3)
 except (RuntimeError, IOError, IndexError):
@@ -582,8 +600,12 @@ legend = legend_fig.legend(patches, labels, loc='center',
                            frameon=False, fontsize='small')
 legend_fig.canvas.draw_idle()
 
-plot3_legend = ('%s-LASSO_CHANNEL_CONTRIBUTIONS_LEGEND-%s.png'
-                % (args.ifo, gpsstub))
+if args.paperV:
+    plot3_legend = ('%s-LASSO_CHANNEL_CONTRIBUTIONS_LEGEND-%s.pdf'
+                    % (args.ifo, gpsstub))
+else:
+    plot3_legend = ('%s-LASSO_CHANNEL_CONTRIBUTIONS_LEGEND-%s.png'
+                    % (args.ifo, gpsstub))
 try:
     legend_fig.savefig(
         plot3_legend,
@@ -652,12 +674,17 @@ def process_channel(input_,):
             ax1.set_ylabel('Primary channel units')
         ax2.set_ylabel('Channel units')
         for ax in fig.axes:
-            ax.legend(loc='best')
+            if args.paperV:
+                ax.legend(loc='best', fontsize=20)
+            else:
+                ax.legend(loc='best')
             ax.margins(x=0)
         ax2.set_xlabel(auto_xlabel)
         channelstub = re_delim.sub('_', str(chan)).replace('_', '-', 1)
-
-        plot4 = '%s_TRENDS-%s.png' % (channelstub, gpsstub)
+        if args.paperV:
+            plot4 = '%s_TRENDS-%s.pdf' % (channelstub, gpsstub)
+        else:
+            plot4 = '%s_TRENDS-%s.png' % (channelstub, gpsstub)
         try:
             fig.canvas.draw_idle()
             fig.savefig(plot4)
@@ -696,9 +723,14 @@ def process_channel(input_,):
             ax.set_ylabel('Sensitive range [Mpc]')
         else:
             ax.set_ylabel('Primary Channel Units')
-        ax.legend(loc='best')
 
-        plot5 = '%s_COMPARISON-%s.png' % (channelstub, gpsstub)
+        if args.paperV:
+            ax.legend(loc='best', fontsize=20)
+            plot5 = '%s_COMPARISON-%s.pdf' % (channelstub, gpsstub)
+        else:
+            ax.legend(loc='best')
+            plot5 = '%s_COMPARISON-%s.png' % (channelstub, gpsstub)
+
         try:
             fig.canvas.draw_idle()
             fig.savefig(plot5)
@@ -749,7 +781,11 @@ def process_channel(input_,):
         fig.set_figheight(plotHeight)
         fig.set_figwidth(plotWidth)
 
-        plot6 = '%s_SCATTER-%s.png' % (channelstub, gpsstub)
+        if args.paperV:
+            plot6 = '%s_SCATTER-%s.pdf' % (channelstub, gpsstub)
+        else:
+            plot6 = '%s_SCATTER-%s.png' % (channelstub, gpsstub)
+
         try:
             fig.canvas.draw_idle()
             fig.save(plot6)
@@ -875,10 +911,16 @@ def generate_cluster(input_,):
             ax.set_ylabel('Scaled amplitude [arbitrary units]')
             ax.set_title('Highly Correlated Channels')
 
-            plot7 = '%s_CLUSTER-%s.png' % (
-                re_delim.sub('_', str(currentchan))
-                        .replace('_', '-', 1),
-                gpsstub)
+            if arg.paperV:
+                plot7 = '%s_CLUSTER-%s.pdf' % (
+                    re_delim.sub('_', str(currentchan))
+                            .replace('_', '-', 1),
+                    gpsstub)
+            else:
+                plot7 = '%s_CLUSTER-%s.png' % (
+                    re_delim.sub('_', str(currentchan))
+                            .replace('_', '-', 1),
+                    gpsstub)
             try:
                 fig.canvas.draw_idle()
                 fig.savefig(plot7)
@@ -902,10 +944,14 @@ def generate_cluster(input_,):
                 for label, color in zip(labels, colors)]
             legend = legend_fig.legend(patches, labels, loc='center',
                                        frameon=False, fontsize='small')
-
-            plot7_legend = '%s_CLUSTER_LEGEND-%s.png' % (
-                re_delim.sub('_', str(currentchan)).replace('_', '-', 1),
-                gpsstub)
+            if args.paperV:
+                plot7_legend = '%s_CLUSTER_LEGEND-%s.pdf' % (
+                    re_delim.sub('_', str(currentchan)).replace('_', '-', 1),
+                    gpsstub)
+            else:
+                plot7_legend = '%s_CLUSTER_LEGEND-%s.png' % (
+                    re_delim.sub('_', str(currentchan)).replace('_', '-', 1),
+                    gpsstub)
             try:
                 legend_fig.canvas.draw_idle()
                 legend_fig.savefig(
