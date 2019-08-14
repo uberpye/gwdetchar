@@ -240,6 +240,7 @@ logger.debug('Removed {0} channels with bad data'.format(nbefore - nafter))
 logger.debug('{0} channels remaining'.format(nafter))
 data = numpy.array([scale(ts.value) for ts in auxdata.values()]).T
 
+usedtable = Table(data=(list(auxdata.keys()),), names=('Channels',))
 # -- perform lasso regression -------------------------------------------------
 
 # create model
@@ -282,7 +283,8 @@ zerofile = '%s-ZERO_COEFFICIENT_CHANNELS-%s.csv' % (args.ifo, gpsstub)
 zeroed.write(zerofile, format='csv', overwrite=True)
 flatfile = '%s-FLAT_CHANNELS-%s.csv' % (args.ifo, gpsstub)
 flatable.write(flatfile, format='csv', overwrite=True)
-
+usedfile = '%s-USED_CHANNELS-%s.csv' % (args.ifo, gpsstub)
+usedtable.write(usedfile, format='csv', overwrite=True)
 # -- generate lasso plots
 
 modelFit = model.predict(data)
@@ -587,7 +589,8 @@ page.div.close()  # page-header
 files = [
     ('%s analyzed channels (CSV)' % nchan, channelsfile),
     ('%s flat channels (CSV)' % len(flatable), flatfile),
-    ('%s zeroed channels (CSV)' % len(zeroed), zerofile)]
+    ('%s zeroed channels (CSV)' % len(zeroed), zerofile),
+    ('%s used channels (CSV)' % len(usedtable), usedfile)]
 page.add(htmlio.download_btn(files, label='Channel information'))
 
 # -- summary table
